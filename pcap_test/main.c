@@ -1,5 +1,31 @@
 #include <pcap.h>
 #include <stdio.h>
+#include <net/ethernet.h>
+#include <netinet/ip.h>
+#include <netinet/tcp.h>
+
+struct ip *iph;
+struct tcphdr *tcph;
+struct ether_header *eph;
+
+
+
+void capturePcap(u_char *useless, const struct pcap_pkthdr *pkthdr, const u_char *packet){
+    unsigned short ether_type;
+    int lengthtmp =0;
+    int length=pkthdr->len;
+
+    eph = (struct ether_header*)packet;
+
+    packet += sizeof(struct ether_header);
+    ether_type = ntohs(eph->ether_type);
+
+    if(ether_type == ETHERTYPE_IP){
+        iph = (struct ip*)packet;
+        printf("Src IP : %s\n", inet_ntoa(iph->ip_src));
+        printf("Dst IP : %s\n", inet_ntoa(iph->ip_dst));
+    }
+}
 
 int main(int argc, char *argv[]){
         pcap_t *handle;			/* Session handle */
@@ -11,6 +37,8 @@ int main(int argc, char *argv[]){
         bpf_u_int32 net;		/* Our IP */
         struct pcap_pkthdr header;	/* The header that pcap gives us */
         const u_char *packet;		/* The actual packet */
+
+
 
         while(1){
             /* Define the device */
