@@ -34,8 +34,8 @@ struct sniff_ip {
     u_short ip_sum;
     struct  in_addr ip_src, ip_dst;
 };
-#define IP_HL(ip)               (((ip)->ip_vhl) & 0x0f)
-#define IP_V(ip)                (((ip)->ip_vhl) >> 4)
+    #define IP_HL(ip)               (((ip)->ip_vhl) & 0x0f)
+    #define IP_V(ip)                (((ip)->ip_vhl) >> 4)
 
 
 typedef u_int tcp_seq;
@@ -119,6 +119,9 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
     count++;
 
     ethernet = (struct sniff_ethernet*)(packet);
+
+    printf("Dest MAC: %x\n", ether_ntoa(ethernet->ether_dhost));
+    printf("Source MAC: %x\n", ether_ntoa(ethernet->ether_shost));
 
     ip = (struct sniff_ip*)(packet + SIZE_ETHERNET);
     size_ip = IP_HL(ip) * 4;
