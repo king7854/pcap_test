@@ -91,16 +91,18 @@ void hextoascii(const u_char *payload, int len, int offset) {
 
     ch = payload;
     for (i = 0; i < len; i++) {
-        if (isprint(*ch))
+        if (isprint(*ch)){
             printf("%c", *ch);
-        else
+        }
+        else{
             printf(".");
+        }
         ch++;
     }
     printf("\n");
 }
 
-void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet) {
+void capturePacket(u_char *args, const struct pcap_pkthdr *header, const u_char *packet) {
 
     static int count = 1;
     const struct sniff_ethernet *ethernet;
@@ -114,11 +116,6 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
 
     int line_len;
     int offset = 0;
-
-    printf("\nPacket number %d:\n", count);
-    count++;
-
-    ethernet = (struct sniff_ethernet*)(packet);
 
     printf("Dest MAC: %x\n", ether_ntoa(ethernet->ether_dhost));
     printf("Source MAC: %x\n", ether_ntoa(ethernet->ether_shost));
@@ -159,8 +156,6 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
             }
         }
     }
-
-    return;
 }
 
 int main(int argc, char **argv)
@@ -176,9 +171,8 @@ int main(int argc, char **argv)
 
     handle = pcap_open_live(dev, SNAP_LEN, 1, 1000, errbuf);
 
-    pcap_loop(handle, 5, got_packet, NULL);
+    pcap_loop(handle, 5, capturePacket, NULL);
 
-    pcap_freecode(&fp);
     pcap_close(handle);
 
     return 0;
