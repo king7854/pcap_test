@@ -37,7 +37,6 @@ struct sniff_ip {
 #define IP_HL(ip)               (((ip)->ip_vhl) & 0x0f)
 #define IP_V(ip)                (((ip)->ip_vhl) >> 4)
 
-
 typedef u_int tcp_seq;
 
 struct sniff_tcp {
@@ -134,12 +133,6 @@ void packetCapture() {
         if(num>5)
             break;
         num++;
-        printf("%d\n", num);
-        /* inet_ntoa -> inet_ntop */
-        //printf("Src IP: %s\n", inet_ntoa(ip->ip_src));
-        //printf("Dst IP: %s\n", inet_ntoa(ip->ip_dst));
-        //printf("Src IP: %s\n", inet_ntop(AF_INET, &(ip->ip_src), srcbuf, sizeof(srcbuf)));
-        //printf("Dst IP: %s\n", inet_ntop(AF_INET, &(ip->ip_dst), dstbuf, sizeof(dstbuf)));
 
         for(int i=0; i<6; i++){
               printf("%02x", ethernet->ether_shost[i]);
@@ -158,8 +151,12 @@ void packetCapture() {
         ip = (struct sniff_ip*)(packet + SIZE_ETHERNET);
         size_ip = IP_HL(ip) * 4;
 
-        printf("Src IP: %s\n", inet_ntoa(ip->ip_src));
-        printf("Dst IP: %s\n", inet_ntoa(ip->ip_dst));
+        /* inet_ntoa -> inet_ntop */
+        // printf("Src IP: %s\n", inet_ntoa(ip->ip_src));
+        // printf("Dst IP: %s\n", inet_ntoa(ip->ip_dst));
+        printf("Src IP: %s\n", inet_ntop(AF_INET, &(ip->ip_src), srcbuf, sizeof(srcbuf)));
+        printf("Dst IP: %s\n", inet_ntop(AF_INET, &(ip->ip_dst), dstbuf, sizeof(dstbuf)));
+
 
         tcp = (struct sniff_tcp*)(packet + SIZE_ETHERNET + size_ip);
         size_tcp = TH_OFF(tcp) * 4;
@@ -191,28 +188,15 @@ void packetCapture() {
                 }
             }
         }
+        printf("IP SIZE : %d\n", size_ip);
+        printf("TCP SIZE : %d\n", size_tcp);
+        printf("DATA SIZE : %d\n", size_payload);
     }
     pcap_close(handle);
 }
 
 int main(int argc, char **argv)
 {
-
-
-    //handle = pcap_open_live(dev, SNAP_LEN, 1, 1000, errbuf);
-
-    //capturePacket;
-    //pcap_loop(handle, 5, capturePacket, NULL);
-
-    /*while(pcap_next_ex(handle, &handle, &pkt_data)){
-        if(i>5)
-            return;
-        capturePacket;
-        i++;
-    }*/
-
     packetCapture();
-
-
     return 0;
 }
