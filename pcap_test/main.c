@@ -1,3 +1,4 @@
+
 #include <pcap.h>
 #include <stdio.h>
 #include <string.h>
@@ -109,6 +110,8 @@ void capturePacket(u_char *args, const struct pcap_pkthdr *header, const u_char 
     const struct sniff_ip *ip;
     const struct sniff_tcp *tcp;
     const char *payload;
+    char srcbuf[20];
+    char dstbuf[20];
 
     int size_ip;
     int size_tcp;
@@ -117,8 +120,12 @@ void capturePacket(u_char *args, const struct pcap_pkthdr *header, const u_char 
     int line_len;
     int offset = 0;
 
-    printf("Dest MAC: %x\n", ether_ntoa(ethernet->ether_dhost));
-    printf("Source MAC: %x\n", ether_ntoa(ethernet->ether_shost));
+    /* inet_ntoa -> inet_ntop */
+    //printf("Src IP: %s\n", inet_ntoa(ip->ip_src));
+    //printf("Dst IP: %s\n", inet_ntoa(ip->ip_dst));
+    printf("Src IP: %s\n", inet_ntop(AF_INET, &(ip->ip_src), srcbuf, sizeof(srcbuf)));
+    printf("Dst IP: %s\n", inet_ntop(AF_INET, &(ip->ip_dst), dstbuf, sizeof(dstbuf)));
+
 
     ip = (struct sniff_ip*)(packet + SIZE_ETHERNET);
     size_ip = IP_HL(ip) * 4;
